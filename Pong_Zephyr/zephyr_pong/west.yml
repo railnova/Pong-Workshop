@@ -3,7 +3,7 @@
 
 manifest:
   self:
-    path: sandbox_app
+    path: zephyr_pong
     
   remotes:
     - name: zephyrproject-rtos
