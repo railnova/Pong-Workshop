@@ -52,7 +52,7 @@
 > * git clone https://github.com/railnova/Pong-Workshop
 > * cd Pong-Workshop/Pong_Zephyr/
 > * pip3 install -r zephyr/scripts/requirements-base.txt
-> * west update
+> * west update (~ 12min)
 > * west zephyr-export
 > * west build -b nucleo_l432kc zephyr_pong/app/
 > * west flash

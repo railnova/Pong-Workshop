@@ -24,27 +24,22 @@ static struct display_drv_config instance_config=
     .cols = { DT_FOREACH_PROP_ELEM(DT_NODELABEL(led_matrix), colgpios, GET_PIN_INFO) },
 };
 
+extern uint8_t led_matrix[8][8];
 
-//static struct k_work_delayable refresh;
+// static struct k_work_delayable refresh;
+// k_work_schedule(&refresh, K_MSEC(10));
 
+static void led_matrix_set_reset(uint8_t set_reset){
+    int row = 0;
+    int col = 0;
+    for(row = 0; row < 8; row++){
+        for(col = 0; col < 8; col++){
+            led_matrix[row][col]=set_reset;
+        }
+    }
+}
 
-static uint8_t led_matrix[8][8] = { { 1, 0, 0, 0, 0, 0, 0, 0 },
-                                    { 0, 1, 0, 0, 0, 0, 0, 0 },
-                                    { 0, 0, 1, 0, 0, 0, 0, 0 },
-                                    { 0, 0, 0, 0, 0, 0, 0, 0 },
-                                    { 0, 0, 0, 0, 0, 0, 0, 0 },
-                                    { 0, 0, 0, 0, 0, 0, 0, 0 },
-                                    { 0, 0, 0, 0, 0, 0, 0, 0 },
-                                    { 0, 0, 0, 0, 0, 0, 0, 0 },};
-
-
-
-
-
-
-
-
-void refreshMatrix(void){
+void led_matrix_refreshMatrix(void){
     int row = 0;
     int col = 0;
     for(row = 0; row < 8; row++){
@@ -58,22 +53,6 @@ void refreshMatrix(void){
     }
 }
 
-
-
-
-
-
-
-static void led_matrix_set_reset(uint8_t set_reset){
-    int row = 0;
-    int col = 0;
-    for(row = 0; row < 8; row++){
-        for(col = 0; col < 8; col++){
-            led_matrix[row][col]=set_reset;
-        }
-    }
-}
-
 void led_matrix_clear(void){
     led_matrix_set_reset(1);
 }
@@ -81,8 +60,7 @@ void led_matrix_set_all(void){
     led_matrix_set_reset(0);
 }
 
-
-void dbg_print_matrix(void){
+void led_matrix_print(void){
     int row = 0;
     int col = 0;
     printk("__________________________________\r\n");
@@ -99,10 +77,18 @@ void dbg_print_matrix(void){
     printk("__________________________________\r\n");
 }
 
-
 static int instance_init(const struct device *dev)
 {
     LOG_DBG("instancied MATRIX R:%d , C:%d",ROW_COUNT,COL_COUNT);
+
+    led_matrix[8][8] = {{ 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 0, 0, 0, 0, 0, 0, 0 },};
 
     for (uint8_t i = 0; i < ROW_COUNT; ++i) {
         device_is_ready(instance_config.rows[i].port);

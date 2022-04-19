@@ -14,12 +14,13 @@
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
 
-void main(void){
-	
-	uint8_t len =0;// 
+extern uint8_t led_matrix[8][8];
+
+void main(void)
+{
     while(true){
-        refreshMatrix();
-        dbg_print_matrix();
+        led_matrix_refreshMatrix();
+        led_matrix_print();
         k_sleep(K_MSEC(1000));
     }
 }
