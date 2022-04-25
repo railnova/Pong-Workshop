@@ -18,9 +18,13 @@ extern uint8_t led_matrix[8][8];
 
 void main(void)
 {
+    int i = 0;
     while(true){
-        led_matrix_refreshMatrix();
-        led_matrix_print();
-        k_sleep(K_MSEC(1000));
+        for(i = 0; i<8; i++){
+            led_matrix_print();
+            k_sleep(K_SECONDS(1));
+            led_matrix[i][i] = 1;
+        }
+        i = 0;
     }
 }
