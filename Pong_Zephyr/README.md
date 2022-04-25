@@ -1,5 +1,7 @@
 # WORKSHOP PONG - ZEPHYR APPLICATION #
 
+Installation of this project is about ~ 30/45min
+
 ## prerequisites ##
 
 > * 6 GB free memory
@@ -51,8 +53,12 @@
 
 > * git clone https://github.com/railnova/Pong-Workshop
 > * cd Pong-Workshop/Pong_Zephyr/
-> * pip3 install -r zephyr/scripts/requirements-base.txt
+> * source ~/.bashrc
 > * west update (~ 12min)
-> * west zephyr-export
+> * pip3 install -r zephyr/scripts/requirements-base.txt
 > * west build -b nucleo_l432kc zephyr_pong/app/
 > * west flash
+
+## Opening terminal to debug ##
+> * sudo apt install picocom
+> * picocom -b 115200 /dev/ttyACM0
