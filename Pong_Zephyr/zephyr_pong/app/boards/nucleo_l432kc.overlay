@@ -15,7 +15,7 @@
             label = "B1_down";
             gpios = <&gpiob 7 GPIO_ACTIVE_LOW>;
         };
-                B2_up:  button_2 {
+        B2_up:  button_2 {
             label = "B2_up";
             gpios = <&gpiob 15 GPIO_ACTIVE_LOW>;
         };
@@ -23,7 +23,7 @@
             label = "B2_down";
             gpios = <&gpiob 1 GPIO_ACTIVE_LOW>;
         };
-                BReset: button_4 {
+        BReset: button_4 {
             label = "BReset";
             gpios = <&gpioa 10 GPIO_ACTIVE_LOW>;
         };
@@ -32,22 +32,22 @@
         compatible = "zephyr,railnova-led-matrix";
         status = "okay";
         label = "LED_MATRIX";
-        rowgpios = <&gpiob 0 GPIO_ACTIVE_HIGH>,
-                <&gpiob 7 GPIO_ACTIVE_HIGH>,
-                <&gpiob 6 GPIO_ACTIVE_HIGH>,
-                <&gpiob 1 GPIO_ACTIVE_HIGH>,
-                <&gpiob 5 GPIO_ACTIVE_HIGH>,
-                <&gpiob 4 GPIO_ACTIVE_HIGH>,
-                <&gpioa 8 GPIO_ACTIVE_HIGH>,
-                <&gpioa 11 GPIO_ACTIVE_HIGH>;
-        colgpios = <&gpioa 0 GPIO_ACTIVE_HIGH>,
-                <&gpioa 1 GPIO_ACTIVE_HIGH>,
-                <&gpioa 3 GPIO_ACTIVE_HIGH>,
-                <&gpioa 4 GPIO_ACTIVE_HIGH>,
-                <&gpioa 5 GPIO_ACTIVE_HIGH>,
-                <&gpioa 6 GPIO_ACTIVE_HIGH>,
-                <&gpioa 7 GPIO_ACTIVE_HIGH>,
-                <&gpioa 9 GPIO_ACTIVE_HIGH>;
+        rowgpios =  <&gpiob 0 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 7 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 6 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 1 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 5 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 4 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 8 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 11 GPIO_ACTIVE_HIGH>;
+        colgpios =  <&gpioa 0 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 1 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 3 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 4 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 5 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 6 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 7 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 9 GPIO_ACTIVE_HIGH>;
     };
 };
 &i2c1 {

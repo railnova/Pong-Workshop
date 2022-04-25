@@ -11,6 +11,11 @@
 #define ROW_COUNT    DT_PROP_LEN(MATRIX_NODE, rowgpios)
 #define COL_COUNT    DT_PROP_LEN(MATRIX_NODE, colgpios)
 
+#define REFRESH_FREQUENCY K_MSEC(10)
+
+#define PIN_LOW 0
+#define PIN_HIGH 1
+
 struct display_drv_config {
     struct gpio_dt_spec rows[ROW_COUNT];
     struct gpio_dt_spec cols[COL_COUNT];
@@ -26,12 +31,10 @@ static struct display_drv_config instance_config=
 
 extern uint8_t led_matrix[8][8];
 
-// static struct k_work_delayable refresh;
-// k_work_schedule(&refresh, K_MSEC(10));
+static struct k_work_delayable refresh;
 
 static void led_matrix_set_reset(uint8_t set_reset){
-    int row = 0;
-    int col = 0;
+    int row, col;
     for(row = 0; row < 8; row++){
         for(col = 0; col < 8; col++){
             led_matrix[row][col]=set_reset;
@@ -39,25 +42,26 @@ static void led_matrix_set_reset(uint8_t set_reset){
     }
 }
 
-void led_matrix_refreshMatrix(void){
-    int row = 0;
-    int col = 0;
+void led_matrix_refreshMatrix(struct k_work *work){
+    int row, col;
     for(row = 0; row < 8; row++){
         for(col = 0; col < 8; col++){
-            gpio_pin_set(instance_config.rows[row].port,instance_config.rows[row].pin, led_matrix[row][col]);
-            gpio_pin_set(instance_config.cols[col].port,instance_config.cols[col].pin, led_matrix[row][col]);
+            gpio_pin_set_dt(&(instance_config.rows[row]), led_matrix[row][col]);
+            gpio_pin_set_dt(&(instance_config.cols[col]), led_matrix[row][col]);
             if(led_matrix[row][col]){
                 printk("R: %d , C:%d\n\r",instance_config.rows[row].pin,instance_config.cols[col].pin);
             }
         }
     }
+
+    k_work_reschedule(&refresh, REFRESH_FREQUENCY);
 }
 
 void led_matrix_clear(void){
-    led_matrix_set_reset(1);
+    led_matrix_set_reset(PIN_HIGH);
 }
 void led_matrix_set_all(void){
-    led_matrix_set_reset(0);
+    led_matrix_set_reset(PIN_LOW);
 }
 
 void led_matrix_print(void){
@@ -79,27 +83,23 @@ void led_matrix_print(void){
 
 static int instance_init(const struct device *dev)
 {
+    uint8_t i;
     LOG_DBG("instancied MATRIX R:%d , C:%d",ROW_COUNT,COL_COUNT);
-
-    led_matrix[8][8] = {{ 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0, 0, 0 },};
-
-    for (uint8_t i = 0; i < ROW_COUNT; ++i) {
+    
+    for (i = 0; i < ROW_COUNT; i++) {
         device_is_ready(instance_config.rows[i].port);
         gpio_pin_configure_dt(&(instance_config.rows[i]), GPIO_OUTPUT_ACTIVE);
-        gpio_pin_set(instance_config.rows[i].port,instance_config.rows[i].pin, false);
+        gpio_pin_set_dt(&(instance_config.rows[i]), PIN_LOW);
     }
-    for (uint8_t i = 0; i < COL_COUNT; ++i) {
+    for (i = 0; i < COL_COUNT; i++) {
         device_is_ready(instance_config.cols[i].port);
         gpio_pin_configure_dt(&(instance_config.cols[i]), GPIO_OUTPUT_ACTIVE);
-        gpio_pin_set(instance_config.cols[i].port,instance_config.cols[i].pin, false);
+        gpio_pin_set_dt(&(instance_config.cols[i]), PIN_LOW);
     }
+
+    LOG_DBG("Init delayed work to refresh matrix");
+    k_work_init_delayable(&refresh, led_matrix_refreshMatrix);
+
     return 0;
 }
 
