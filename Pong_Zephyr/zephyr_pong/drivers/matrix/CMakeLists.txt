@@ -2,4 +2,4 @@
 # SPDX-License-Identifier: Apache-2.0
 
 zephyr_library()
-zephyr_library_sources(rn_LED_matrix.c)
+zephyr_library_sources_ifdef(CONFIG_RN_LED_MATRIX rn_LED_matrix.c)
