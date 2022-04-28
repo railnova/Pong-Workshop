@@ -11,6 +11,8 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <logging/log.h>
 
+#include "rn_LED_matrix.h"
+
 LOG_MODULE_REGISTER(rn_led_matrix, LOG_LEVEL_DBG);
 
 // Macro to get the gpio structure using the device tree
@@ -23,13 +25,6 @@ LOG_MODULE_REGISTER(rn_led_matrix, LOG_LEVEL_DBG);
 
 // Declare buttons structures & callback
 #define NB_BUTTON 5
-typedef struct {
-    struct gpio_dt_spec gpio;
-    struct gpio_callback callback;
-}button_cfg;
-
-static button_cfg buttons[NB_BUTTON];
-
 enum button_labels {
 	B_RIGHT_UP = 0,
 	B_RIGHT_DOWN,
@@ -37,6 +32,13 @@ enum button_labels {
     B_LEFT_DOWN,
     B_RESET,
 };
+
+struct button_cfg {
+    struct gpio_dt_spec gpio;
+    struct gpio_callback callback;
+};
+
+struct button_cfg buttons[NB_BUTTON];
 
 // Right button
 const struct gpio_dt_spec br_up = GPIO_DT_SPEC_GET(DT_NODELABEL(br_up), gpios);
@@ -138,31 +140,37 @@ void led_matrix_print(void){
     printk("  ______________________________\r\n");
 }
 
-void led_matrix_button_pressed(const struct device *dev, struct gpio_callback *cb,
-		    uint32_t pins)
-{
+
+int led_matrix_get_pin_interrupt(uint32_t pins){
     if(pins & BIT(buttons[B_RIGHT_UP].gpio.pin)) {
-        LOG_DBG("Right up button pressed");
-        return;
+        return PIN_B1_UP;
     }
     else if(pins & BIT(buttons[B_RIGHT_DOWN].gpio.pin)) {
         LOG_DBG("Right down button pressed");
-        return;
+        return PIN_B1_DOWN;
     }
     else if(pins & BIT(buttons[B_LEFT_UP].gpio.pin)) {
         LOG_DBG("Left up button pressed");
-        return;
+        return PIN_B2_UP;
     }
     else if(pins & BIT(buttons[B_LEFT_DOWN].gpio.pin)) {
         LOG_DBG("Left down button pressed");
-        return;
+        return PIN_B2_DOWN;
     }
     else if(pins & BIT(buttons[B_RESET].gpio.pin)) {
         LOG_DBG("Reset button pressed");
-        return;
+        return PIN_B_RST;
     }
-    else {
-        return;
+    
+    return PIN_NOT_DEFINED;
+}
+
+void led_matrix_init_buttons_callback(gpio_callback_handler_t handler){
+    int i;
+    for(i = 0; i < NB_BUTTON; i++){
+        gpio_init_callback(&buttons[i].callback, handler, BIT(buttons[i].gpio.pin)); 
+        gpio_add_callback(buttons[i].gpio.port, &buttons[i].callback);
+        LOG_DBG("Set up button at %s pin %d\n", buttons[i].gpio.port->name, buttons[i].gpio.pin);
     }
 }
 
@@ -198,9 +206,6 @@ static int instance_init(const struct device *dev)
         device_is_ready(buttons[i].gpio.port);
         gpio_pin_configure_dt(&buttons[i].gpio, GPIO_INPUT);
         gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_EDGE_TO_ACTIVE);
-        gpio_init_callback(&buttons[i].callback, led_matrix_button_pressed, BIT(buttons[i].gpio.pin));
-        gpio_add_callback(buttons[i].gpio.port, &buttons[i].callback);
-        LOG_DBG("Set up button at %s pin %d\n", buttons[i].gpio.port->name, buttons[i].gpio.pin);
     }
 
     // Initialise delay work for led matrix refresh
