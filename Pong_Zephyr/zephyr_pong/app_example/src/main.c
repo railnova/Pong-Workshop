@@ -17,58 +17,30 @@
  */
 LOG_MODULE_REGISTER(main_example, LOG_LEVEL_DBG);
 
-K_WORK_DEFINE(button_playerA_work, button_playerA_pressed);
-K_WORK_DEFINE(button_playerB_work, button_playerB_pressed);
-K_WORK_DEFINE(button_reset_work, button_reset_pressed);
-
-/**
- * @brief Callback handler for the buttons. 
- */
-void buttons_callback(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
-{
-    int pin; 
-    pin = led_matrix_get_interrupt_label_by_pin(pins);
-
-    if(pin == PIN_BA1 || pin == PIN_BA2){
-        k_work_submit(&button_playerA_work);
-    }
-    else if(pin == PIN_BB1 || pin == PIN_BB2){
-        k_work_submit(&button_playerB_work);
-    } 
-    else if(pin == PIN_B_RST){
-        k_work_submit(&button_reset_work);
-    }
-    
-    return;
-}
-
 /**
  * @brief Work to perform when player A press one of his buttons. 
  *        This job set up called inside buttons_callback
  */
-void button_playerA_pressed(struct k_work *work){
-    int pin = led_matrix_get_last_pin_interrupt();
+void cb_button_playerA_pressed(int pin){
     switch(pin){
         case PIN_BA1:
             LOG_DBG("Player A button 1 pressed (going up)");
-            if(cursor_playerA.y2 == 7){
-                return;
-            }
-            led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
-            led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
-            cursor_playerA.y2 = cursor_playerA.y1;
-            cursor_playerA.y1--;
+            if(cursor_playerA.y2 != 1){
+                led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
+                led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
+                cursor_playerA.y2 = cursor_playerA.y1;
+                cursor_playerA.y1--;
+            }  
             break;
 
         case PIN_BA2:
             LOG_DBG("Player A button 2 pressed (going down)");
-            if(cursor_playerA.y1 == 0){
-                return;
+            if(cursor_playerA.y1 != 6){
+                led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
+                led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
+                cursor_playerA.y1 = cursor_playerA.y2;
+                cursor_playerA.y2++;
             }
-            led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
-            led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
-            cursor_playerA.y1 = cursor_playerA.y2;
-            cursor_playerA.y2++;
             break;
 
         default:
@@ -86,29 +58,26 @@ void button_playerA_pressed(struct k_work *work){
  * @brief Work to perform when player B press one of his buttons. 
  *        This job set up called inside buttons_callback
  */
-void button_playerB_pressed(struct k_work *work){
-    int pin = led_matrix_get_last_pin_interrupt();
+void cb_button_playerB_pressed(int pin){
     switch(pin){
         case PIN_BB1:
             LOG_DBG("Player B button 1 pressed (going up)");
-            if(cursor_playerB.y2 == 7){
-                return;
+            if(cursor_playerB.y2 != 1){
+                led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
+                led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
+                cursor_playerB.y2 = cursor_playerB.y1;
+                cursor_playerB.y1--;
             }
-            led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
-            led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
-            cursor_playerB.y2 = cursor_playerB.y1;
-            cursor_playerB.y1--;
             break;
 
         case PIN_BB2:
             LOG_DBG("Player B button 2 pressed (going down)");
-            if(cursor_playerB.y1 == 0){
-                return;
+            if(cursor_playerB.y1 != 6){
+                led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
+                led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
+                cursor_playerB.y1 = cursor_playerB.y2;
+                cursor_playerB.y2++;
             }
-            led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
-            led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
-            cursor_playerB.y1 = cursor_playerB.y2;
-            cursor_playerB.y2++;
             break;
 
         default:
@@ -126,7 +95,7 @@ void button_playerB_pressed(struct k_work *work){
  * @brief Work to perform when the reset button is pressed. 
  *        This job set up called inside buttons_callback
  */
-void button_reset_pressed(struct k_work *work){
+void cb_button_reset_pressed(){
     LOG_DBG("Reset button pressed");
     reset_game();
     return;
@@ -136,10 +105,7 @@ void button_reset_pressed(struct k_work *work){
 void main(void)
 {    
     game_ongoing = false;
-    led_matrix_init_buttons_callback(buttons_callback);
-    k_work_init(&button_playerA_work, button_playerA_pressed);
-    k_work_init(&button_playerB_work, button_playerB_pressed);
-    k_work_init(&button_reset_work, button_reset_pressed);
+    led_matrix_and_buttons_init();
 
     reset_game();
     LOG_INF("Score = %i - %i", score.playerA, score.playerB);

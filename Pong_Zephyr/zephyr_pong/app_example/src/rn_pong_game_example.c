@@ -23,6 +23,8 @@ bool game_ongoing;
 
 #define MAX_NB_ROUND 20
 
+
+
 static int set_random_ball_direction(void){
     int dir = rand()%3;
     if(dir == 2){

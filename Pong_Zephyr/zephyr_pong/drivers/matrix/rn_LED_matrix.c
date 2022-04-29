@@ -73,6 +73,49 @@ static const struct display_drv_config instance_config =
 };
 
 
+
+void button_playerA_pressed(struct k_work *work){
+    int pin_pressed = led_matrix_get_last_pin_interrupt();
+    cb_button_playerA_pressed(pin_pressed);
+}
+
+void button_playerB_pressed(struct k_work *work){
+    int pin_pressed = led_matrix_get_last_pin_interrupt();
+    cb_button_playerB_pressed(pin_pressed);
+}
+
+void button_reset_pressed(struct k_work *work){
+    int pin_pressed = led_matrix_get_last_pin_interrupt();
+    cb_button_reset_pressed(pin_pressed);
+}
+
+K_WORK_DEFINE(button_playerA_work, button_playerA_pressed);
+K_WORK_DEFINE(button_playerB_work, button_playerB_pressed);
+K_WORK_DEFINE(button_reset_work, button_reset_pressed);
+
+/**
+ * @brief Callback handler for the buttons. 
+ */
+void buttons_callback(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+{
+    int pin; 
+    pin = led_matrix_get_interrupt_label_by_pin(pins);
+
+    if(pin == PIN_BA1 || pin == PIN_BA2){
+        k_work_submit(&button_playerA_work);
+    }
+    else if(pin == PIN_BB1 || pin == PIN_BB2){
+        k_work_submit(&button_playerB_work);
+    } 
+    else if(pin == PIN_B_RST){
+        k_work_submit(&button_reset_work);
+    }
+    
+    return;
+}
+
+
+
 /**
  * @brief Delayed work performed to set the proper GPIO depending 
  *        on the matrix.
@@ -159,12 +202,17 @@ void led_matrix_clear(void){
 /**
  * @brief Initialisation of buttons interrupts and callback creation.
  */
-void led_matrix_init_buttons_callback(gpio_callback_handler_t handler){
+void led_matrix_and_buttons_init(){
+    
     for(int i = 0; i < NB_BUTTON; i++){
-        gpio_init_callback(&buttons[i].callback, handler, BIT(buttons[i].gpio.pin)); 
+        gpio_init_callback(&buttons[i].callback, buttons_callback, BIT(buttons[i].gpio.pin)); 
         gpio_add_callback(buttons[i].gpio.port, &buttons[i].callback);
         LOG_DBG("Set up button at %s pin %d\n", buttons[i].gpio.port->name, buttons[i].gpio.pin);
     }
+
+    k_work_init(&button_playerA_work, button_playerA_pressed);
+    k_work_init(&button_playerB_work, button_playerB_pressed);
+    k_work_init(&button_reset_work, button_reset_pressed);
 }
 
 
