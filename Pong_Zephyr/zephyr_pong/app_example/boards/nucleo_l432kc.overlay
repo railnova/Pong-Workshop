@@ -60,3 +60,7 @@
 &spi1 {
         status = "disabled";
 };
+
+&spi3 {
+    status = "disabled";
+};

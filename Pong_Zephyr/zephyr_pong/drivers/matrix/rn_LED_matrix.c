@@ -56,7 +56,7 @@ const struct gpio_dt_spec brst = GPIO_DT_SPEC_GET(DT_NODELABEL(breset), gpios);
 static uint8_t matrix[8][8];
 
 // Refresh frequency of the matrix & delayed work associated
-#define REFRESH_FREQUENCY K_MSEC(10)
+#define REFRESH_FREQUENCY K_USEC(10)
 struct k_work_delayable refresh;
 
 // Structure for GPIO specification by rows/column
@@ -79,17 +79,16 @@ static const struct display_drv_config instance_config =
  */
 static void led_matrix_refresh(struct k_work *work){
     int row, col;
+
     for(row = 0; row < 8; row++){
         for(col = 0; col < 8; col++){
-            gpio_pin_set_dt(&instance_config.rows[row], 0);
-            gpio_pin_set_dt(&instance_config.cols[col], 0);
-
-            if(matrix[row][col] != 0){
-                // LOG_DBG("Row_pin = %d, Col_pin = %d", instance_config.rows[row].pin, instance_config.cols[col].pin);
-                gpio_pin_set_dt(&instance_config.rows[row], 1);
-                gpio_pin_set_dt(&instance_config.cols[col], 1);
-            }   
+            gpio_pin_set_dt(&instance_config.cols[col], matrix[row][col]);  
         }
+
+        gpio_pin_set_dt(&instance_config.rows[row], true);
+        k_sleep(K_MSEC(1));
+        gpio_pin_set_dt(&instance_config.rows[row], false);
+
     }
 
     k_work_reschedule(&refresh, REFRESH_FREQUENCY);
@@ -134,14 +133,26 @@ void led_matrix_print(void){
     for(row = 0; row < 8; row++){
         for(col = 0; col < 8; col++){
             if(matrix[row][col]){
-                printk("   @");
+                printk("   1");
             }else{
-                printk("   O");
+                printk("   0");
             }
         }
         printk("\r\n");
     }
     printk("  ______________________________\r\n");
+}
+
+/**
+ * @brief Clear all matrix.
+ */
+void led_matrix_clear(void){
+    int i, j;
+    for(i = 0; i<8; i++){
+        for(j = 0; j<8; j++){
+            led_matrix_set(i,j,0);
+        }
+    }
 }
 
 
@@ -150,9 +161,6 @@ void led_matrix_print(void){
  */
 void led_matrix_init_buttons_callback(gpio_callback_handler_t handler){
     for(int i = 0; i < NB_BUTTON; i++){
-        device_is_ready(buttons[i].gpio.port);
-        gpio_pin_configure_dt(&buttons[i].gpio, GPIO_INPUT);
-        gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_EDGE_TO_ACTIVE);
         gpio_init_callback(&buttons[i].callback, handler, BIT(buttons[i].gpio.pin)); 
         gpio_add_callback(buttons[i].gpio.port, &buttons[i].callback);
         LOG_DBG("Set up button at %s pin %d\n", buttons[i].gpio.port->name, buttons[i].gpio.pin);
@@ -168,19 +176,19 @@ int led_matrix_get_interrupt_label_by_pin(uint32_t pins){
     int pin_label = PIN_NOT_DEFINED;
 
     if(pins & BIT(buttons[B_RIGHT_UP].gpio.pin)) {
-        LOG_DBG("Player A button 1 pressed");
+        // LOG_DBG("Player A button 1 pressed");
         pin_label = PIN_BA1;
     }
     else if(pins & BIT(buttons[B_RIGHT_DOWN].gpio.pin)) {
-        LOG_DBG("Player A button 2 pressed");
+        // LOG_DBG("Player A button 2 pressed");
         pin_label = PIN_BA2;
     }
     else if(pins & BIT(buttons[B_LEFT_UP].gpio.pin)) {
-        LOG_DBG("Player B button 1 pressed");
+        // LOG_DBG("Player B button 1 pressed");
         pin_label = PIN_BB1;
     }
     else if(pins & BIT(buttons[B_LEFT_DOWN].gpio.pin)) {
-        LOG_DBG("Player B button 2 pressed");
+        // LOG_DBG("Player B button 2 pressed");
         pin_label = PIN_BB2;
     }
     else if(pins & BIT(buttons[B_RESET].gpio.pin)) {
@@ -232,7 +240,7 @@ static int instance_init(const struct device *dev)
     for(i = 0; i < NB_BUTTON; i++){
         device_is_ready(buttons[i].gpio.port);
         gpio_pin_configure_dt(&buttons[i].gpio, GPIO_INPUT);
-        gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_EDGE_TO_ACTIVE);
+        gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_EDGE_RISING);
     }
 
     // Initialise delay work for led matrix refresh

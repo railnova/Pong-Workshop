@@ -12,6 +12,7 @@
 
 void led_matrix_set(uint8_t x, uint8_t y, bool val);
 void led_matrix_print();
+void led_matrix_clear();
 
 enum pin_interrupt {
     PIN_NOT_DEFINED = -1,

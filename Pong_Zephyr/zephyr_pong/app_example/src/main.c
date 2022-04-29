@@ -15,7 +15,7 @@
  * LOG_LEVEL_NONE, LOG_LEVEL_ERR, LOG_LEVEL_WRN, LOG_LEVEL_INF, LOG_LEVEL_DBG
  * The associated LOG_xxx() message will be printed depending on the level selected. 
  */
-LOG_MODULE_REGISTER(main_example, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(main_example, LOG_LEVEL_DBG);
 
 K_WORK_DEFINE(button_playerA_work, button_playerA_pressed);
 K_WORK_DEFINE(button_playerB_work, button_playerB_pressed);
@@ -101,28 +101,32 @@ void button_reset_pressed(struct k_work *work){
 // Take into account that refresh frequency = 10 ms
 void main(void)
 {    
-    // led_matrix_init_buttons_callback(buttons_callback);
-    // k_work_init(&button_playerA_work, button_playerA_pressed);
-    // k_work_init(&button_playerB_work, button_playerB_pressed);
-    // k_work_init(&button_reset_work, button_reset_pressed);
+    led_matrix_init_buttons_callback(buttons_callback);
+    k_work_init(&button_playerA_work, button_playerA_pressed);
+    k_work_init(&button_playerB_work, button_playerB_pressed);
+    k_work_init(&button_reset_work, button_reset_pressed);
 
     reset_game();
     LOG_INF("Score = %i - %i", score.playerA, score.playerB);
-    led_matrix_print();
 
-    int i,j;
+    int i;
 
     score.playerA = 12;
     score.playerB = 97;
-    display_score();
+
+    led_matrix_clear();
+    k_sleep(K_SECONDS(1));
     
     while(true){
-        // for(i=0; i<8; i++){
-        //     for(j=0; j<8; j++){
-        //         led_matrix_set(i,j,1);
-        //     }
-        // }
-        led_matrix_print();
-        k_sleep(K_SECONDS(15));   
+
+        led_matrix_clear();
+
+        for(i=0;i<100;i++){
+            score.playerA = i;
+            score.playerB = i;
+            display_score();
+            k_sleep(K_SECONDS(2)); 
+            
+        }
     }
 }
