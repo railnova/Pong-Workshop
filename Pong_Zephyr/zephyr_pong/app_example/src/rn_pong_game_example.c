@@ -262,18 +262,21 @@ void display_score(void) {
 void pong_game(void) {
     if(game_ongoing)
     {
+        int ball_next_x = ball.x + ball.x_dir;
+        int ball_next_y = ball.y + ball.y_dir;
+
         // Ball inside 
         // Collision with limits ? 
         if(ball.y == 0 || ball.y == 7){
             ball.y_dir = -(ball.y_dir);
         }
         // Collision with player A cursor ?
-        else if(ball.x == cursor_playerA.x && (ball.y == cursor_playerA.y1 || ball.y == cursor_playerA.y2)){
+        else if(ball_next_x == cursor_playerA.x && (ball_next_y == cursor_playerA.y1 || ball_next_y == cursor_playerA.y2)){
             ball.x_dir = -1;
             ball.y_dir = set_random_ball_direction();
         }
         // Collision with player B cursor ?
-        else if(ball.x == cursor_playerB.x && (ball.y == cursor_playerB.y1 || ball.y == cursor_playerB.y2)){
+        else if(ball_next_x == cursor_playerB.x && (ball_next_y == cursor_playerB.y1 || ball_next_y == cursor_playerB.y2)){
             ball.x_dir = 1;
             ball.y_dir = set_random_ball_direction();
         }
