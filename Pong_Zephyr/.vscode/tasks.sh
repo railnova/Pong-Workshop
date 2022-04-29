@@ -1,7 +1,7 @@
 #!/bin/bash
 
-app_dir="/home/geoffrey/Documents/repos/Pong-Workshop/Pong_Zephyr/zephyr_pong/app"
-board=nucleo_l432kc
+app_dir="/home/geoffrey/Documents/repos/Pong-Workshop/Pong_Zephyr/zephyr_pong/app_example"
+board=nucleo_g031k8
 build_dir="build_$(basename $app_dir)_$(basename $board)"
 
 function build {

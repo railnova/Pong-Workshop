@@ -6,7 +6,7 @@
     "command": "bash",
     "tasks": [
         {
-            "label": "  $(settings) app  ",
+            "label": "  $(settings) app_example  ",
             "type": "shell",
             "command": ". ${workspaceFolder}/.vscode/app.sh",
             "detail": "Select the app to build",
@@ -18,7 +18,7 @@
             },
         },
         {
-            "label": "  $(circuit-board) nucleo_l432kc  ",
+            "label": "  $(circuit-board) nucleo_g031k8  ",
             "type": "shell",
             "command": ". ${workspaceFolder}/.vscode/board.sh",
             "detail": "Select the board to build",
