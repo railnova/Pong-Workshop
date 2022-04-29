@@ -9,6 +9,7 @@ extern struct cursor_coordinate cursor_playerA;
 extern struct cursor_coordinate cursor_playerB;
 extern struct ball_coordinate ball;
 
+#define RIGHT 0
 #define LEFT 1
 
 void reset_game(void);
