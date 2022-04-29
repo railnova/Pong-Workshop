@@ -50,11 +50,21 @@ void button_playerA_pressed(struct k_work *work){
     int pin = led_matrix_get_last_pin_interrupt();
     switch(pin){
         case PIN_BA1:
-            LOG_DBG("Player A button 1 pressed");
+            LOG_DBG("Player A button 1 pressed (going up)");
+            if(cursor_playerA.y2 == 7){
+                return;
+            }
+            cursor_playerA.y2 = cursor_playerA.y1;
+            cursor_playerA.y1--;
             break;
 
         case PIN_BA2:
-            LOG_DBG("Player A button 2 pressed");
+            LOG_DBG("Player A button 2 pressed (going down)");
+            if(cursor_playerA.y1 == 0){
+                return;
+            }
+            cursor_playerA.y1 = cursor_playerA.y2;
+            cursor_playerA.y2++;
             break;
 
         default:
@@ -73,11 +83,21 @@ void button_playerB_pressed(struct k_work *work){
     int pin = led_matrix_get_last_pin_interrupt();
     switch(pin){
         case PIN_BB1:
-            LOG_DBG("Player B button 1 pressed");
+            LOG_DBG("Player B button 1 pressed (going up)");
+            if(cursor_playerB.y2 == 7){
+                return;
+            }
+            cursor_playerB.y2 = cursor_playerB.y1;
+            cursor_playerB.y1--;
             break;
 
         case PIN_BB2:
-            LOG_DBG("Player B button 2 pressed");
+            LOG_DBG("Player B button 2 pressed (going down)");
+            if(cursor_playerB.y1 == 0){
+                return;
+            }
+            cursor_playerB.y1 = cursor_playerB.y2;
+            cursor_playerB.y2++;
             break;
 
         default:
@@ -98,7 +118,7 @@ void button_reset_pressed(struct k_work *work){
     return;
 }
 
-// Take into account that refresh frequency = 10 ms
+
 void main(void)
 {    
     led_matrix_init_buttons_callback(buttons_callback);
@@ -108,25 +128,8 @@ void main(void)
 
     reset_game();
     LOG_INF("Score = %i - %i", score.playerA, score.playerB);
-
-    int i;
-
-    score.playerA = 12;
-    score.playerB = 97;
-
-    led_matrix_clear();
     k_sleep(K_SECONDS(1));
     
     while(true){
-
-        led_matrix_clear();
-
-        for(i=0;i<100;i++){
-            score.playerA = i;
-            score.playerB = i;
-            display_score();
-            k_sleep(K_SECONDS(2)); 
-            
-        }
     }
 }

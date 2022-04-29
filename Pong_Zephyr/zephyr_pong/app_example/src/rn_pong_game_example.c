@@ -230,4 +230,3 @@ void display_score(void) {
 
     return;
 }
-
