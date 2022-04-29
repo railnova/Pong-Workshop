@@ -102,22 +102,26 @@ void button_reset_pressed(struct k_work *work){
 void main(void)
 {    
     // led_matrix_init_buttons_callback(buttons_callback);
-    k_work_init(&button_playerA_work, button_playerA_pressed);
-    k_work_init(&button_playerB_work, button_playerB_pressed);
-    k_work_init(&button_reset_work, button_reset_pressed);
+    // k_work_init(&button_playerA_work, button_playerA_pressed);
+    // k_work_init(&button_playerB_work, button_playerB_pressed);
+    // k_work_init(&button_reset_work, button_reset_pressed);
 
     reset_game();
     LOG_INF("Score = %i - %i", score.playerA, score.playerB);
     led_matrix_print();
 
     int i,j;
+
+    score.playerA = 12;
+    score.playerB = 97;
+    display_score();
     
     while(true){
-        for(i=0; i<8; i++){
-            for(j=0; j<8; j++){
-                led_matrix_set(i,j,1);
-            }
-        }
+        // for(i=0; i<8; i++){
+        //     for(j=0; j<8; j++){
+        //         led_matrix_set(i,j,1);
+        //     }
+        // }
         led_matrix_print();
         k_sleep(K_SECONDS(15));   
     }

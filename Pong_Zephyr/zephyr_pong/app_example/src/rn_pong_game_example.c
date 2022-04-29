@@ -70,7 +70,6 @@ void start_new_round(void) {
 void reset_game(void) {
 
     LOG_DBG("Resetting game");
-    int i,j;
 
     // Reset score
     score.playerA = 0;
@@ -97,30 +96,39 @@ void get_led_matrix_depending_on_number(bool position, uint8_t number, uint8_t t
             break;
 
         case 1:
+            number_image = 0x00808080a0c08000;
             break;
 
         case 2:
+            number_image = 0x00f0204090906000;
             break;
 
         case 3:
+            number_image = 0x007080806040f000;
             break;
 
         case 4:
+            number_image = 0x0040f05010101000;
             break;
 
         case 5:
+            number_image = 0x007080807010f000;
             break;
 
         case 6:
+            number_image = 0x006090907010e000;
             break;
 
         case 7:
+            number_image = 0x004040408090f000;
             break;
 
         case 8:
+            number_image = 0x0060909060906000;
             break;
 
         case 9:
+            number_image = 0x00f08080f090f000;
             break;
 
         default:
@@ -182,7 +190,7 @@ void display_score(void) {
     k_sleep(K_MSEC(50));
 
     // Display score for player A
-    if(score.playerA > 99 | score.playerB > 99) {
+    if(score.playerA > 99 || score.playerB > 99) {
         LOG_ERR("Score to high, reset game");
         return;
     }
@@ -194,11 +202,13 @@ void display_score(void) {
 
     for(i = 0; i < 8; i++){
         for(j = 0; j < 8; j++){
-            matrix[i][j] = matrix_temp[i][j];
+            if(matrix_temp[i][j]){
+                led_matrix_set(i, j, 1);
+            }
         }
     }
 
-    k_sleep(K_SECS(3));
+    k_sleep(K_SECONDS(3));
 
     unit = score.playerB%10;
     tens = score.playerB/10;
@@ -207,11 +217,13 @@ void display_score(void) {
 
     for(i = 0; i < 8; i++){
         for(j = 0; j < 8; j++){
-            matrix[i][j] = matrix_temp[i][j];
+            if(matrix_temp[i][j]){
+                led_matrix_set(i, j, 1);
+            }
         }
     }
 
-    k_sleep(K_SECS(3));
+    k_sleep(K_SECONDS(3));
 
     return;
 }
