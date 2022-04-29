@@ -121,6 +121,7 @@ void button_reset_pressed(struct k_work *work){
 
 void main(void)
 {    
+    game_ongoing = false;
     led_matrix_init_buttons_callback(buttons_callback);
     k_work_init(&button_playerA_work, button_playerA_pressed);
     k_work_init(&button_playerB_work, button_playerB_pressed);
@@ -131,5 +132,7 @@ void main(void)
     k_sleep(K_SECONDS(1));
     
     while(true){
+        pong_game();
+        k_sleep(K_MSEC(500));
     }
 }

@@ -6,6 +6,7 @@
 
 #include <zephyr.h>
 #include <logging/log.h>
+#include <stdlib.h>
 
 #include "rn_LED_matrix.h"
 #include "rn_pong_game_example.h"
@@ -13,11 +14,22 @@
 
 LOG_MODULE_REGISTER(rn_pong_game, LOG_LEVEL_DBG);
 
-
 struct score score;
 struct cursor_coordinate cursor_playerA;
 struct cursor_coordinate cursor_playerB;
 struct ball_coordinate ball;
+
+bool game_ongoing;
+
+#define MAX_NB_ROUND 20
+
+static int set_random_ball_direction(void){
+    int dir = rand()%3;
+    if(dir == 2){
+        dir = -1;
+    }
+    return dir;
+}
 
 
 /**
@@ -26,6 +38,12 @@ struct ball_coordinate ball;
  *              - Reset cursors position
  */
 void start_new_round(void) {
+
+    if(score.playerA > (MAX_NB_ROUND-1) || score.playerB > (MAX_NB_ROUND-1)){
+        game_ongoing = false;
+        LOG_INF("Game finished, press reset to start again");
+        return;
+    }
 
     LOG_DBG("Start new round game");
     int i,j;
@@ -37,17 +55,19 @@ void start_new_round(void) {
         }
     }
 
-    // Reset ball position
+    // Reset ball position & set direction
     ball.x = 4;
     ball.y = 3;
+    ball.x_dir = set_random_ball_direction();
+    ball.y_dir = set_random_ball_direction();
     led_matrix_set(ball.x, ball.y, 1);
 
     // Reset cursor position
-    cursor_playerA.x = 0;
+    cursor_playerA.x = 7;
     cursor_playerA.y1 = 3;
     cursor_playerA.y2 = (cursor_playerA.y1 + 1);
 
-    cursor_playerB.x = 7;
+    cursor_playerB.x = 0;
     cursor_playerB.y1 = cursor_playerA.y1;
     cursor_playerB.y2 = (cursor_playerB.y1 + 1);
 
@@ -57,6 +77,8 @@ void start_new_round(void) {
     led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 1);
 
     k_sleep(K_MSEC(100));
+
+    game_ongoing = true;
 
     return;
 }
@@ -229,4 +251,49 @@ void display_score(void) {
     k_sleep(K_SECONDS(5));
 
     return;
+}
+
+
+/**
+ * @brief Game main loop
+ */
+void pong_game(void) {
+    if(game_ongoing)
+    {
+        // Ball inside 
+        // Collision with limits ? 
+        if(ball.y == 0 || ball.y == 7){
+            ball.y_dir = -(ball.y_dir);
+        }
+        // Collision with player A cursor ?
+        else if(ball.x == cursor_playerA.x && (ball.y == cursor_playerA.y1 || ball.y == cursor_playerA.y2)){
+            ball.x_dir = -1;
+            ball.y_dir = set_random_ball_direction();
+        }
+        // Collision with player B cursor ?
+        else if(ball.x == cursor_playerB.x && (ball.y == cursor_playerB.y1 || ball.y == cursor_playerB.y2)){
+            ball.x_dir = 1;
+            ball.y_dir = set_random_ball_direction();
+        }
+
+        led_matrix_set(ball.x, ball.y, 0);
+        
+        ball.x = ball.x + ball.x_dir;
+        ball.y = ball.y + ball.y_dir;
+
+        led_matrix_set(ball.x, ball.y, 1);
+        
+        // Check if ball is outside 
+        if(ball.x == 0) {
+            score.playerB++;
+            game_ongoing = false;
+        }
+        else if(ball.x == 7) {
+            score.playerA++;
+            game_ongoing = false;
+        }
+    }
+    else {
+        start_new_round();
+    }
 }
