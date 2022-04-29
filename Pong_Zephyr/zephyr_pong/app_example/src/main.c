@@ -54,6 +54,8 @@ void button_playerA_pressed(struct k_work *work){
             if(cursor_playerA.y2 == 7){
                 return;
             }
+            led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
+            led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
             cursor_playerA.y2 = cursor_playerA.y1;
             cursor_playerA.y1--;
             break;
@@ -63,6 +65,8 @@ void button_playerA_pressed(struct k_work *work){
             if(cursor_playerA.y1 == 0){
                 return;
             }
+            led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
+            led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
             cursor_playerA.y1 = cursor_playerA.y2;
             cursor_playerA.y2++;
             break;
@@ -71,6 +75,9 @@ void button_playerA_pressed(struct k_work *work){
             LOG_DBG("Unknown button pressed for player A");
             break;
     }
+
+    led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 1);
+    led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 1);
 
     return;
 }
@@ -87,6 +94,8 @@ void button_playerB_pressed(struct k_work *work){
             if(cursor_playerB.y2 == 7){
                 return;
             }
+            led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
+            led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
             cursor_playerB.y2 = cursor_playerB.y1;
             cursor_playerB.y1--;
             break;
@@ -96,6 +105,8 @@ void button_playerB_pressed(struct k_work *work){
             if(cursor_playerB.y1 == 0){
                 return;
             }
+            led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
+            led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
             cursor_playerB.y1 = cursor_playerB.y2;
             cursor_playerB.y2++;
             break;
@@ -104,6 +115,9 @@ void button_playerB_pressed(struct k_work *work){
             LOG_DBG("Unknown button pressed for player B");
             break;
     }
+
+    led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 1);
+    led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 1);
 
     return;
 }
