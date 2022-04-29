@@ -36,6 +36,7 @@ struct score {
 struct ball_coordinate {
     uint8_t x;
     uint8_t y;
+    int dir; 
 };
 
 struct cursor_coordinate {
