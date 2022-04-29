@@ -16,8 +16,14 @@
  */
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
-/*
- * Callback handler for the buttons. 
+// Structure to use for coordinates & scores
+static struct score score;
+static struct cursor_coordinate cursor_playerA;
+static struct cursor_coordinate cursor_playerB;
+static struct ball_coordinate ball;
+
+/**
+ * @brief Callback handler for the buttons. 
  */
 void buttons_callback(const struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
@@ -26,19 +32,19 @@ void buttons_callback(const struct device *dev, struct gpio_callback *cb,
     pin = led_matrix_get_pin_interrupt(pins);
 
     switch(pin){
-        case PIN_B1_UP:
+        case PIN_BA1:
             LOG_DBG("Right up button pressed");
             break;
 
-        case PIN_B1_DOWN:
+        case PIN_BA2:
             LOG_DBG("Right down button pressed");
             break;
 
-        case PIN_B2_UP:
+        case PIN_BB1:
             LOG_DBG("Left up button pressed");
             break;
 
-        case PIN_B2_DOWN:
+        case PIN_BB2:
             LOG_DBG("Left down button pressed");
             break;
 
@@ -55,6 +61,14 @@ void buttons_callback(const struct device *dev, struct gpio_callback *cb,
 void main(void)
 {
     led_matrix_init_buttons_callback(buttons_callback);
+  
+    score.playerA = 0;
+    score.playerB = 0;
+
+    LOG_INF("Starting pong game");
+    led_matrix_print();
+    k_sleep(K_SECONDS(10));
+    
 
     while(true){
         LOG_INF("led_matrix_set(0,0,1)");

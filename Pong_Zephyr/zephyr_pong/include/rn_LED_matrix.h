@@ -15,14 +15,32 @@ void led_matrix_print();
 
 enum pin_interrupt {
     PIN_NOT_DEFINED = -1,
-    PIN_B1_UP = 0,
-    PIN_B1_DOWN,
-    PIN_B2_UP,
-    PIN_B2_DOWN,
+    PIN_BA1 = 0,
+    PIN_BA2,
+    PIN_BB1,
+    PIN_BB2,
     PIN_B_RST,
 };
 
 void led_matrix_init_buttons_callback(gpio_callback_handler_t handler);
-int led_matrix_get_pin_interrupt(uint32_t pins);
+int led_matrix_get_interrupt_label_by_pin(uint32_t pins);
+int led_matrix_get_last_pin_interrupt(void);
+
+
+struct score {
+    uint8_t playerA;
+    uint8_t playerB;
+};
+
+struct ball_coordinate {
+    uint8_t x;
+    uint8_t y;
+};
+
+struct cursor_coordinate {
+    uint8_t x;
+    uint8_t y1;
+    uint8_t y2;
+};
 
 #endif //RN_LED_MATRIX_H_

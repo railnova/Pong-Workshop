@@ -33,6 +33,8 @@ enum button_labels {
     B_RESET,
 };
 
+static enum pin_interrupt last_pin_isr;
+
 struct button_cfg {
     struct gpio_dt_spec gpio;
     struct gpio_callback callback;
@@ -70,9 +72,10 @@ static const struct display_drv_config instance_config =
     .cols = { DT_FOREACH_PROP_ELEM(DT_NODELABEL(led_matrix), colgpios, GET_PIN_INFO) },
 };
 
-/* 
- * Delayed work performed to set the proper GPIO depending 
- * on the matrix.
+
+/**
+ * @brief Delayed work performed to set the proper GPIO depending 
+ *        on the matrix.
  */
 static void led_matrix_refresh(struct k_work *work){
     int row, col;
@@ -92,20 +95,20 @@ static void led_matrix_refresh(struct k_work *work){
     k_work_reschedule(&refresh, REFRESH_FREQUENCY);
 }
 
-/* 
- * Set the x, y value of the matrix to the assigned value. 
- * x = [0,7], y = [0,7]
- * 
- * For example : led_matrix_set(3, 4, 1)
- * R0 x  x  x  x  x  x  x  x
- * R1 x  x  x  x  x  x  x  x
- * R2 x  x  x  x  x  x  x  x
- * R3 x  x  x  x  1  x  x  x
- * R4 x  x  x  x  x  x  x  x
- * R5 x  x  x  x  x  x  x  x
- * R6 x  x  x  x  x  x  x  x
- * R7 x  x  x  x  x  x  x  x
- *    C0 C1 C2 C3 C4 C5 C6 C7
+
+/**
+ * @brief Set the x, y value of the matrix to the assigned value.     
+ * @attention x = [0,7], y = [0,7]
+ * @example led_matrix_set(3, 4, 1)
+ *          R0 x  x  x  x  x  x  x  x
+ *          R1 x  x  x  x  x  x  x  x
+ *          R2 x  x  x  x  x  x  x  x
+ *          R3 x  x  x  x  1  x  x  x
+ *          R4 x  x  x  x  x  x  x  x
+ *          R5 x  x  x  x  x  x  x  x
+ *          R6 x  x  x  x  x  x  x  x
+ *          R7 x  x  x  x  x  x  x  x
+ *             C0 C1 C2 C3 C4 C5 C6 C7
  */
 void led_matrix_set(uint8_t x, uint8_t y, bool val){
     if(x >= ROW_COUNT){
@@ -117,12 +120,13 @@ void led_matrix_set(uint8_t x, uint8_t y, bool val){
         return;
     }
 
-    matrix[x][y] = (uint8_t)val;
+    matrix[y][x] = (uint8_t)val;
     return;
 }
 
-/* 
- * Print all the matrix on the serial port.
+
+/**
+ * @brief Print all the matrix on the serial port.
  */
 void led_matrix_print(void){
     int row, col;
@@ -130,9 +134,9 @@ void led_matrix_print(void){
     for(row = 0; row < 8; row++){
         for(col = 0; col < 8; col++){
             if(matrix[row][col]){
-                printk("   1");
+                printk("   @");
             }else{
-                printk("   0");
+                printk("   O");
             }
         }
         printk("\r\n");
@@ -141,41 +145,64 @@ void led_matrix_print(void){
 }
 
 
-int led_matrix_get_pin_interrupt(uint32_t pins){
-    if(pins & BIT(buttons[B_RIGHT_UP].gpio.pin)) {
-        return PIN_B1_UP;
-    }
-    else if(pins & BIT(buttons[B_RIGHT_DOWN].gpio.pin)) {
-        LOG_DBG("Right down button pressed");
-        return PIN_B1_DOWN;
-    }
-    else if(pins & BIT(buttons[B_LEFT_UP].gpio.pin)) {
-        LOG_DBG("Left up button pressed");
-        return PIN_B2_UP;
-    }
-    else if(pins & BIT(buttons[B_LEFT_DOWN].gpio.pin)) {
-        LOG_DBG("Left down button pressed");
-        return PIN_B2_DOWN;
-    }
-    else if(pins & BIT(buttons[B_RESET].gpio.pin)) {
-        LOG_DBG("Reset button pressed");
-        return PIN_B_RST;
-    }
-    
-    return PIN_NOT_DEFINED;
-}
-
+/**
+ * @brief Initialisation of buttons interrupts and callback creation.
+ */
 void led_matrix_init_buttons_callback(gpio_callback_handler_t handler){
-    int i;
-    for(i = 0; i < NB_BUTTON; i++){
+    for(int i = 0; i < NB_BUTTON; i++){
+        device_is_ready(buttons[i].gpio.port);
+        gpio_pin_configure_dt(&buttons[i].gpio, GPIO_INPUT);
+        gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_EDGE_TO_ACTIVE);
         gpio_init_callback(&buttons[i].callback, handler, BIT(buttons[i].gpio.pin)); 
         gpio_add_callback(buttons[i].gpio.port, &buttons[i].callback);
         LOG_DBG("Set up button at %s pin %d\n", buttons[i].gpio.port->name, buttons[i].gpio.pin);
     }
 }
 
-/* 
- * Initialisation of the matrix driver. 
+
+/**
+ * @brief Recover pin name depending on the callback pin variable.
+ */
+int led_matrix_get_interrupt_label_by_pin(uint32_t pins){
+
+    int pin_label = PIN_NOT_DEFINED;
+
+    if(pins & BIT(buttons[B_RIGHT_UP].gpio.pin)) {
+        LOG_DBG("Player A button 1 pressed");
+        pin_label = PIN_BA1;
+    }
+    else if(pins & BIT(buttons[B_RIGHT_DOWN].gpio.pin)) {
+        LOG_DBG("Player A button 2 pressed");
+        pin_label = PIN_BA2;
+    }
+    else if(pins & BIT(buttons[B_LEFT_UP].gpio.pin)) {
+        LOG_DBG("Player B button 1 pressed");
+        pin_label = PIN_BB1;
+    }
+    else if(pins & BIT(buttons[B_LEFT_DOWN].gpio.pin)) {
+        LOG_DBG("Player B button 2 pressed");
+        pin_label = PIN_BB2;
+    }
+    else if(pins & BIT(buttons[B_RESET].gpio.pin)) {
+        LOG_DBG("Reset button pressed");
+        pin_label = PIN_B_RST;
+    }
+
+    last_pin_isr = pin_label;
+
+    return pin_label;
+}
+
+/**
+ * @brief Recover the last button pin that gives an interrupt.
+ */
+int led_matrix_get_last_pin_interrupt(void){
+
+    return last_pin_isr;
+}
+
+/**
+ * @brief Initialisation of the matrix driver. 
  */
 static int instance_init(const struct device *dev)
 {
