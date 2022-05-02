@@ -61,6 +61,9 @@ void start_new_round(void) {
     ball.x = 4;
     ball.y = 3;
     ball.x_dir = set_random_ball_direction();
+    if(ball.x_dir==0){
+        ball.x_dir = -1;
+    }
     ball.y_dir = set_random_ball_direction();
     led_matrix_set(ball.x, ball.y, 1);
 
@@ -164,7 +167,7 @@ static void get_led_matrix_depending_on_number(bool position, uint8_t number, ui
     if(position == LEFT){
         for(i = 0; i < 8; i++){
             bit_pos = bit_pos + 4;
-            for(j = 0; j < 4; j++){
+            for(j = 3; j >= 0; j--){
                 temp_matrix[i][j] =  (number_image>>bit_pos) & 0x1;
                 bit_pos++;
             }
@@ -175,7 +178,7 @@ static void get_led_matrix_depending_on_number(bool position, uint8_t number, ui
     else {
         for(i = 0; i < 8; i++){
             bit_pos = bit_pos + 4;
-            for(j = 4; j < 8; j++){
+            for(j = 7; j >= 4; j--){
                 temp_matrix[i][j] =  (number_image>>bit_pos) & 0x1;
                 bit_pos++;
             }
@@ -237,8 +240,8 @@ void display_score(void) {
         }
     }
 
-    k_sleep(K_SECONDS(5));
-
+    k_sleep(K_SECONDS(3));
+    
     unit = score.playerB%10;
     tens = score.playerB/10;
     get_led_matrix_depending_on_number(LEFT, tens, matrix_temp);
@@ -250,7 +253,7 @@ void display_score(void) {
         }
     }
 
-    k_sleep(K_SECONDS(5));
+    k_sleep(K_SECONDS(3));
 
     return;
 }
@@ -290,11 +293,13 @@ void pong_game(void) {
         
         // Check if ball is outside 
         if(ball.x == 0) {
-            score.playerB++;
+            score.playerA++;
+            LOG_DBG("GOAL FROM PLAYER A");
             game_ongoing = false;
         }
         else if(ball.x == 7) {
-            score.playerA++;
+            score.playerB++;
+            LOG_DBG("GOAL FROM PLAYER B");
             game_ongoing = false;
         }
     }
