@@ -16,10 +16,6 @@ extern bool game_ongoing;
 
 void pong_game(void);
 void reset_game(void);
-
-void button_playerA_pressed(struct k_work *work);
-void button_playerB_pressed(struct k_work *work);
-void button_reset_pressed(struct k_work *work);
 void display_score(void);
 
 
