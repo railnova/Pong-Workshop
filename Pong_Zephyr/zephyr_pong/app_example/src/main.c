@@ -21,10 +21,10 @@ LOG_MODULE_REGISTER(main_example, LOG_LEVEL_DBG);
  * @brief Work to perform when player A press one of his buttons. 
  *        This job set up called inside buttons_callback
  */
-void cb_button_playerA_pressed(int pin){
-    switch(pin){
-        case PIN_BA1:
-            LOG_DBG("Player A button 1 pressed (going up)");
+void cb_button_playerA_pressed(t_cursor_direction direction){
+    switch(direction){
+        case E_LEFT:
+            LOG_DBG("Player A button 1 pressed (going left)");
             if(cursor_playerA.y2 != 1){
                 led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
                 led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
@@ -33,8 +33,8 @@ void cb_button_playerA_pressed(int pin){
             }  
             break;
 
-        case PIN_BA2:
-            LOG_DBG("Player A button 2 pressed (going down)");
+        case E_RIGHT:
+            LOG_DBG("Player A button 2 pressed (going right)");
             if(cursor_playerA.y1 != 6){
                 led_matrix_set(cursor_playerA.x, cursor_playerA.y1, 0);
                 led_matrix_set(cursor_playerA.x, cursor_playerA.y2, 0);
@@ -58,10 +58,10 @@ void cb_button_playerA_pressed(int pin){
  * @brief Work to perform when player B press one of his buttons. 
  *        This job set up called inside buttons_callback
  */
-void cb_button_playerB_pressed(int pin){
-    switch(pin){
-        case PIN_BB1:
-            LOG_DBG("Player B button 1 pressed (going up)");
+void cb_button_playerB_pressed(t_cursor_direction direction){
+    switch(direction){
+        case E_RIGHT:
+            LOG_DBG("Player B button 1 pressed (going right)");
             if(cursor_playerB.y2 != 1){
                 led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
                 led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);
@@ -70,8 +70,8 @@ void cb_button_playerB_pressed(int pin){
             }
             break;
 
-        case PIN_BB2:
-            LOG_DBG("Player B button 2 pressed (going down)");
+        case E_LEFT:
+            LOG_DBG("Player B button 2 pressed (going left)");
             if(cursor_playerB.y1 != 6){
                 led_matrix_set(cursor_playerB.x, cursor_playerB.y1, 0);
                 led_matrix_set(cursor_playerB.x, cursor_playerB.y2, 0);

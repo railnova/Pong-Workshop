@@ -108,7 +108,7 @@ void reset_game(void) {
  * @brief Display the score depending on the number and the position.
  * @param position 
  */
-void get_led_matrix_depending_on_number(bool position, uint8_t number, uint8_t temp_matrix[][8]){
+static void get_led_matrix_depending_on_number(bool position, uint8_t number, uint8_t temp_matrix[][8]){
 
     int i,j;
     uint64_t number_image = 0x00;
@@ -299,6 +299,7 @@ void pong_game(void) {
         }
     }
     else {
+        display_score();
         start_new_round();
     }
 }

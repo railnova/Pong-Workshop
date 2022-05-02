@@ -5,6 +5,7 @@ Installation of this project is about ~ 30/45min
 ## prerequisites ##
 
 > * 6 GB free memory
+> * VScode with "tasks" extension installed
 > * Python version v3.7 minimum
 > * CMake version v3.20.0 minimum
 > * Devicetree compiler v1.4.6 minimum

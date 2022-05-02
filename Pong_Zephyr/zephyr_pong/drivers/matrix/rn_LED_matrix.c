@@ -76,17 +76,35 @@ static const struct display_drv_config instance_config =
 
 void button_playerA_pressed(struct k_work *work){
     int pin_pressed = led_matrix_get_last_pin_interrupt();
-    cb_button_playerA_pressed(pin_pressed);
+
+
+    switch(pin_pressed){
+        case PIN_BA1:
+                cb_button_playerA_pressed(E_LEFT);
+                break;
+        case PIN_BA2:
+                cb_button_playerA_pressed(E_RIGHT);
+                break;
+    }
+
+    
 }
 
 void button_playerB_pressed(struct k_work *work){
     int pin_pressed = led_matrix_get_last_pin_interrupt();
-    cb_button_playerB_pressed(pin_pressed);
+
+    switch(pin_pressed){
+        case PIN_BB1:
+                cb_button_playerB_pressed(E_RIGHT);
+                break;
+        case PIN_BB2:
+                cb_button_playerB_pressed(E_LEFT);
+                break;
+    }
 }
 
 void button_reset_pressed(struct k_work *work){
-    int pin_pressed = led_matrix_get_last_pin_interrupt();
-    cb_button_reset_pressed(pin_pressed);
+    cb_button_reset_pressed();
 }
 
 K_WORK_DEFINE(button_playerA_work, button_playerA_pressed);
