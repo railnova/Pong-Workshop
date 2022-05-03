@@ -56,7 +56,7 @@ const struct gpio_dt_spec brst = GPIO_DT_SPEC_GET(DT_NODELABEL(breset), gpios);
 static uint8_t matrix[8][8];
 
 // Refresh frequency of the matrix & delayed work associated
-#define REFRESH_FREQUENCY K_USEC(10)
+#define REFRESH_FREQUENCY K_USEC(1)
 struct k_work_delayable refresh;
 
 // Structure for GPIO specification by rows/column
@@ -147,7 +147,7 @@ static void led_matrix_refresh(struct k_work *work){
         }
 
         gpio_pin_set_dt(&instance_config.rows[row], true);
-        k_sleep(K_MSEC(1));
+        k_sleep(K_MSEC(2));
         gpio_pin_set_dt(&instance_config.rows[row], false);
 
     }

@@ -14,6 +14,8 @@ extern bool game_ongoing;
 #define RIGHT 0
 #define LEFT 1
 
+static int speed;
+
 void pong_game(void);
 void reset_game(void);
 void display_score(void);

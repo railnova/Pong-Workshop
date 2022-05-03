@@ -44,7 +44,11 @@ void start_new_round(void) {
     if(score.playerA > (MAX_NB_ROUND-1) || score.playerB > (MAX_NB_ROUND-1)){
         game_ongoing = false;
         LOG_INF("Game finished, press reset to start again");
+        speed = 400;
         return;
+    }
+    else{
+        speed = speed - 10;
     }
 
     LOG_DBG("Start new round game");
@@ -242,7 +246,7 @@ void display_score(void) {
         }
     }
 
-    k_sleep(K_SECONDS(3));
+    k_sleep(K_SECONDS(1));
     
     unit = score.playerB%10;
     tens = score.playerB/10;
@@ -255,7 +259,7 @@ void display_score(void) {
         }
     }
 
-    k_sleep(K_SECONDS(3));
+    k_sleep(K_SECONDS(1));
 
     led_matrix_button_irq_state(1);
 
@@ -269,23 +273,29 @@ void display_score(void) {
 void pong_game(void) {
     if(game_ongoing)
     {
-        int ball_next_x = ball.x + ball.x_dir;
-        int ball_next_y = ball.y + ball.y_dir;
-
+        bool out_of_lim = false;
         // Ball inside 
         // Collision with limits ? 
         if(ball.y == 0 || ball.y == 7){
             ball.y_dir = -(ball.y_dir);
+            out_of_lim = true;
         }
+
+        int ball_next_x = ball.x + ball.x_dir;
+        int ball_next_y = ball.y + ball.y_dir;
         // Collision with player A cursor ?
-        else if(ball_next_x == cursor_playerA.x && (ball_next_y == cursor_playerA.y1 || ball_next_y == cursor_playerA.y2)){
+        if(ball_next_x == cursor_playerA.x && (ball_next_y == cursor_playerA.y1 || ball_next_y == cursor_playerA.y2)){
             ball.x_dir = -1;
-            ball.y_dir = set_random_ball_direction();
+            if(!out_of_lim){
+                ball.y_dir = set_random_ball_direction();
+            }
         }
         // Collision with player B cursor ?
         else if(ball_next_x == cursor_playerB.x && (ball_next_y == cursor_playerB.y1 || ball_next_y == cursor_playerB.y2)){
             ball.x_dir = 1;
-            ball.y_dir = set_random_ball_direction();
+            if(!out_of_lim){
+                ball.y_dir = set_random_ball_direction();
+            }
         }
 
         led_matrix_set(ball.x, ball.y, 0);

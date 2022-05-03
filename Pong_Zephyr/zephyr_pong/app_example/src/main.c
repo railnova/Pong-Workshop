@@ -107,12 +107,14 @@ void main(void)
     game_ongoing = false;
     led_matrix_and_buttons_init();
 
+    speed = 400;
+
     reset_game();
     LOG_INF("Score = %i - %i", score.playerA, score.playerB);
     k_sleep(K_SECONDS(1));
     
     while(true){
         pong_game();
-        k_sleep(K_MSEC(500));
+        k_sleep(K_MSEC(speed));
     }
 }
