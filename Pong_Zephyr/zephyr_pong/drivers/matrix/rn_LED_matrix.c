@@ -235,6 +235,24 @@ void led_matrix_and_buttons_init(){
 
 
 /**
+ * @brief Suspend or restart button IRQ (0 = suspend, 1 = start)
+ */
+void led_matrix_button_irq_state(bool irq_state){
+    
+    if(irq_state){
+        for(int i = 0; i < NB_BUTTON; i++){
+            gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_EDGE_RISING);
+        }
+    }
+    else{
+        for(int i = 0; i < NB_BUTTON; i++){
+            gpio_pin_interrupt_configure_dt(&buttons[i].gpio, GPIO_INT_DISABLE);
+        }
+    }
+}
+
+
+/**
  * @brief Recover pin name depending on the callback pin variable.
  */
 int led_matrix_get_interrupt_label_by_pin(uint32_t pins){

@@ -198,6 +198,8 @@ void display_score(void) {
     int i,j;
     uint8_t matrix_temp[8][8];
 
+    led_matrix_button_irq_state(0);
+
     // Power on all leds 
     for(i=0; i<8; i++){
         for(j=0; j<8; j++){
@@ -254,6 +256,8 @@ void display_score(void) {
     }
 
     k_sleep(K_SECONDS(3));
+
+    led_matrix_button_irq_state(1);
 
     return;
 }

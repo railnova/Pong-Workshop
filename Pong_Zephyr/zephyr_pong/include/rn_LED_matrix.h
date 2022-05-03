@@ -30,8 +30,8 @@ typedef enum{
 
 void led_matrix_and_buttons_init();
 int led_matrix_get_interrupt_label_by_pin(uint32_t pins);
-int led_matrix_get_last_pin_interrupt(void);
-
+int led_matrix_get_last_pin_interrupt();
+void led_matrix_button_irq_state(bool irq_state);
 
 extern void cb_button_playerA_pressed(t_cursor_direction direction);
 extern void cb_button_playerB_pressed(t_cursor_direction direction);
