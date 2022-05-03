@@ -1,0 +1,26 @@
+{
+    "files.associations": {
+        "*.inc": "c",
+        "zephyr.h": "c",
+        "uart.h": "c",
+        "i2c.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "lps33hw.h": "c",
+        "gpio.h": "c",
+        "sensor.h": "c",
+        "sensors_gesture.h": "c",
+        "opt3001.h": "c",
+        "device.h": "c",
+        "lora.h": "c",
+        "mesh_kernel.h": "c",
+        "util.h": "c",
+        "kernel.h": "c",
+        "state.h": "c",
+        "pm.h": "c",
+        "log.h": "c",
+        "printk.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

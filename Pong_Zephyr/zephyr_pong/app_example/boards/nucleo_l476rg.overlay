@@ -1,0 +1,60 @@
+/ {
+    chosen {
+        zephyr,console = &usart2;
+        zephyr,shell-uart = &usart2;
+        zephyr,sram = &sram0;
+        zephyr,flash = &flash0;
+    };
+
+    gpio_keys {
+        compatible = "gpio-keys";
+        br_up:  button_0 {
+            label = "B1_up";
+            gpios = <&gpioc 9 GPIO_ACTIVE_LOW>;
+        };
+        br_down:button_1 {
+            label = "B1_down";
+            gpios = <&gpioc 10 GPIO_ACTIVE_LOW>;
+        };
+        bl_up:  button_2 {
+            label = "B2_up";
+            gpios = <&gpioc 11 GPIO_ACTIVE_LOW>;
+        };
+        bl_down:button_3 {
+            label = "B2_down";
+            gpios = <&gpioc 12 GPIO_ACTIVE_LOW>;
+        };
+        breset: button_4 {
+            label = "BReset";
+            gpios = <&gpioc 8 GPIO_ACTIVE_LOW>;
+        };
+    };
+    led_matrix: led_matrix {
+        compatible = "zephyr,railnova-led-matrix";
+        status = "okay";
+        label = "LED_MATRIX";
+        rowgpios =  <&gpioa 0 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 1 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 4 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 0 GPIO_ACTIVE_HIGH>,
+                    <&gpioc 1 GPIO_ACTIVE_HIGH>,
+                    <&gpioc 0 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 8 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 9 GPIO_ACTIVE_HIGH>;
+        colgpios =  <&gpioa 5 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 6 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 7 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 6 GPIO_ACTIVE_HIGH>,
+                    <&gpioc 7 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 9 GPIO_ACTIVE_HIGH>,
+                    <&gpioa 8 GPIO_ACTIVE_HIGH>,
+                    <&gpiob 10 GPIO_ACTIVE_HIGH>;
+    };
+};
+&i2c1 {
+        status = "disabled";
+};
+
+&spi1 {
+        status = "disabled";
+};

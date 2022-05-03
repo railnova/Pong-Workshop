@@ -1,0 +1,21 @@
+#
+# Copyright Railnova 2022
+# Authors : Bultot Geoffrey & Lea Vielfaure
+# Railnova Proprietary Licence
+
+description: Generic LED matrix
+include: base.yaml
+compatible: "zephyr,railnova-led-matrix"
+properties:
+    label:
+      required: true
+    rowgpios:
+      type: phandle-array
+      required: true
+      description: |
+        Array of GPIOs to be used as rows of the matrix.
+    colgpios:
+      type: phandle-array
+      required: true
+      description: |
+        Array of GPIOs to be used as columns of the matrix.

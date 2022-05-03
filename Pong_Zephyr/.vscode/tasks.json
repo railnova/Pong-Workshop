@@ -1,0 +1,78 @@
+
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "command": "bash",
+    "tasks": [
+        {
+            "label": "  $(settings) app_example  ",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/.vscode/app.sh",
+            "detail": "Select the app to build",
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "presentation": {
+                "echo": false,
+            },
+        },
+        {
+            "label": "  $(circuit-board) nucleo_g031k8  ",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/.vscode/board.sh",
+            "detail": "Select the board to build",
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "presentation": {
+                "echo": false,
+            },
+        },
+        {
+            "label": "  $(zap)  Build  ",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/.vscode/tasks.sh build",
+            "detail": "Build application from the last build",
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": false,
+            },
+        },
+        {
+            "label": "  $(trashcan) Clean  ",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/.vscode/tasks.sh clean",
+            "detail": "Clean build folder",
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
+            "label": "  $(run)  Flash and run  ",
+            "type": "shell",
+            "command": ". ${workspaceFolder}/.vscode/tasks.sh run",
+            "detail": "Connect to the board then flash and run the application",
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "presentation": {
+                "echo": false,
+            },
+        },
+    ]
+}
