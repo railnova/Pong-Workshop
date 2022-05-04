@@ -13,3 +13,7 @@ tools/
 *.out
 # build directories
 build*/
+# VsCode tasks
+.vscode/tasks.sh
+# Zephyr directory
+zephyr/
